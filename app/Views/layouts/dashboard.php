@@ -231,7 +231,7 @@
         <header class="header">
             <div class="user">
                 <strong><?= esc(user()->username) ?></strong>
-                <span><?= implode(', ', user()->getGroups()) ?></span>
+                <span><?= implode(', ', user()->getRoles()) ?></span>
             </div>
             <div class="date">
                 <?= date('l, d M Y') ?>
