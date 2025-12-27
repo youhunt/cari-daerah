@@ -1,9 +1,19 @@
 <?= $this->extend('layouts/dashboard') ?>
 <?= $this->section('content') ?>
 
-<div class="card">
-    <h3>Selamat datang di CeritaDaerah 👋</h3>
-    <p>Mulai tulis dan kelola cerita tentang daerahmu.</p>
+<div class="grid-3">
+    <div class="stat">
+        <h2>12</h2>
+        <p>Konten Saya</p>
+    </div>
+    <div class="stat">
+        <h2>5</h2>
+        <p>Published</p>
+    </div>
+    <div class="stat">
+        <h2>2</h2>
+        <p>Menunggu Moderasi</p>
+    </div>
 </div>
 
 <?= $this->endSection() ?>

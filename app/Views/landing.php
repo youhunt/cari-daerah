@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>CariDaerah – Cari Daerah, Kuliner & Wisata Lokal Indonesia</title>
-    // 
     <meta name="description" content="CariDaerah membantu kamu cari daerah, kuliner khas, wisata lokal, dan cerita daerah di seluruh Indonesia langsung dari warga setempat.">
 
     <meta name="keywords" content="cari daerah, cari kuliner, cari wisata, informasi daerah, kuliner lokal, wisata lokal Indonesia">
@@ -14,10 +13,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Favicon -->
-    <link rel="icon" href="/assets/favicon/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <link rel="icon" href="/assets/favicon/favicon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon/favicon.svg">
     <link rel="apple-touch-icon" href="/assets/favicon/apple-touch-icon.png">
+
+    <!-- Web App / PWA -->
+    <link rel="manifest" href="/assets/favicon/site.webmanifest">
+
+    <!-- Optional but recommended -->
+    <meta name="theme-color" content="#C40000">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
