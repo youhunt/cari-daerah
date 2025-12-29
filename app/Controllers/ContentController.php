@@ -9,12 +9,15 @@ use App\Models\{
     RegionModel
 };
 
+use App\Services\RegionService;
+
 class ContentController extends BaseController
 {
     protected ContentModel $content;
     protected ContentMetaModel $meta;
     protected ContentCategoryModel $category;
     protected RegionModel $region;
+    protected RegionService $regionService;
 
     public function __construct()
     {
@@ -22,18 +25,21 @@ class ContentController extends BaseController
         $this->meta     = new ContentMetaModel();
         $this->category = new ContentCategoryModel();
         $this->region   = new RegionModel();
+        $this->regionService = new RegionService();
     }
 
     public function index()
     {
-        $userId = user_id();
-
-        $data['contents'] = $this->content
-            ->where('user_id', $userId)
+        $contents = $this->content
+            ->select('contents.*, content_categories.name as category_name')
+            ->join('content_categories', 'content_categories.id = contents.category_id')
+            ->where('user_id', user_id())
             ->orderBy('created_at', 'DESC')
             ->findAll();
 
-        return view('content/index', $data);
+        return view('content/index', [
+            'contents' => $contents
+        ]);
     }
 
     public function create()
@@ -45,20 +51,32 @@ class ContentController extends BaseController
 
     public function store()
     {
+        $provinceCode = (int) $this->request->getPost('province_code');
+        $cityCode     = (int) $this->request->getPost('city_code');
+        $districtCode = (int) $this->request->getPost('district_code');
+        $villageCode  = (int) $this->request->getPost('village_code');
+
+        $provinceName = $this->regionService->getProvinceName($provinceCode);
+        $cityName     = $this->regionService->getCityName($cityCode);
+        $districtName = $this->regionService->getDistrictName($districtCode);
+        $villageName  = $villageCode
+            ? $this->regionService->getVillageName($villageCode)
+            : null;
+
         $regionId = $this->region->findOrCreate([
-            'province_code'  => $this->request->getPost('province_code'),
-            'province_name'  => $this->request->getPost('province_name'),
-            'city_code'      => $this->request->getPost('city_code'),
-            'city_name'      => $this->request->getPost('city_name'),
-            'district_code'  => $this->request->getPost('district_code'),
-            'district_name'  => $this->request->getPost('district_name'),
-            'village_code'   => $this->request->getPost('village_code'),
-            'village_name'   => $this->request->getPost('village_name'),
+            'province_code'  => $provinceCode,
+            'province_name'  => $provinceName,
+            'city_code'      => $cityCode,
+            'city_name'      => $cityName,
+            'district_code'  => $districtCode,
+            'district_name'  => $districtName,
+            'village_code'   => $villageCode,
+            'village_name'   => $villageName,
             'slug'           => url_title(
-                $this->request->getPost('province_name') . ' ' .
-                    $this->request->getPost('city_name') . ' ' .
-                    $this->request->getPost('district_name') . ' ' .
-                    $this->request->getPost('village_name'),
+                $provinceName . ' ' .
+                    $cityName . ' ' .
+                    $districtName . ' ' .
+                    $villageName,
                 '-',
                 true
             ),
@@ -84,33 +102,93 @@ class ContentController extends BaseController
         return redirect()->to('/konten')->with('success', 'Konten berhasil disimpan');
     }
 
-    public function edit($id)
+    public function edit(int $id)
     {
-        $content = $this->content->find($id);
+        $content = $this->content
+            ->where('id', $id)
+            ->where('user_id', user_id()) // keamanan
+            ->first();
 
-        if (!$content || $content['user_id'] !== user_id()) {
-            throw new \CodeIgniter\Exceptions\PageForbiddenException();
+        if (!$content) {
+            return redirect()->to('/konten')->with('error', 'Konten tidak ditemukan');
         }
+
+        $categories = $this->category->findAll();
 
         return view('content/form', [
             'content'    => $content,
-            'meta'       => $this->meta->getMeta($id),
-            'categories' => $this->category->active()->findAll(),
+            'categories' => $categories,
+
+            // ⬇️ untuk auto-select wilayah
+            'region' => [
+                'province' => $content['province_code'] ?? null,
+                'city'     => $content['city_code'] ?? null,
+                'district' => $content['district_code'] ?? null,
+                'village'  => $content['village_code'] ?? null,
+            ],
         ]);
     }
 
-    public function update($id)
+
+    public function update(int $id)
     {
-        $this->content->update($id, [
-            'title'   => $this->request->getPost('title'),
-            'summary' => $this->request->getPost('summary'),
-            'content' => $this->request->getPost('content'),
+        $content = $this->content
+            ->where('id', $id)
+            ->where('user_id', user_id())
+            ->first();
+
+        if (!$content) {
+            return redirect()->to('/konten')->with('error', 'Konten tidak ditemukan');
+        }
+
+        // Ambil kode wilayah
+        $provinceCode = (int) $this->request->getPost('province_code');
+        $cityCode     = (int) $this->request->getPost('city_code');
+        $districtCode = (int) $this->request->getPost('district_code');
+        $villageCode  = (int) $this->request->getPost('village_code');
+
+        // Resolve nama wilayah via service
+        $provinceName = $this->regionService->getProvinceName($provinceCode);
+        $cityName     = $this->regionService->getCityName($cityCode);
+        $districtName = $this->regionService->getDistrictName($districtCode);
+        $villageName  = $villageCode
+            ? $this->regionService->getVillageName($villageCode)
+            : null;
+
+        // Find or create region
+        $regionId = $this->region->findOrCreate([
+            'province_code'  => $provinceCode,
+            'province_name'  => $provinceName,
+            'city_code'      => $cityCode,
+            'city_name'      => $cityName,
+            'district_code'  => $districtCode,
+            'district_name'  => $districtName,
+            'village_code'   => $villageCode,
+            'village_name'   => $villageName,
+            'slug' => url_title(
+                trim("$provinceName $cityName $districtName $villageName"),
+                '-',
+                true
+            ),
         ]);
 
+        // Update konten
+        $this->content->update($id, [
+            'category_id' => $this->request->getPost('category_id'),
+            'region_id'   => $regionId,
+            'title'       => $this->request->getPost('title'),
+            'slug'        => url_title($this->request->getPost('title'), '-', true),
+            'summary'     => $this->request->getPost('summary'),
+            'content'     => $this->request->getPost('content'),
+            'updated_at'  => date('Y-m-d H:i:s'),
+        ]);
+
+        // Meta (kalau ada)
         $this->meta->setMeta($id, $this->request->getPost('meta') ?? []);
 
-        return redirect()->to('/konten')->with('success', 'Konten diperbarui');
+        return redirect()->to('/konten')->with('success', 'Konten berhasil diperbarui');
     }
+
 
     public function show($slug)
     {

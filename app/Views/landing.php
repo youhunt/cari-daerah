@@ -327,10 +327,16 @@
             </div>
             <nav class="nav-links">
                 <a href="/">Beranda</a>
-                <a href="/cerita">Cerita Daerah</a>
+                <a href="/cari">Cari</a>
                 <a href="/tentang">Tentang</a>
-                <a href="/login">Masuk</a>
+
+                <?php if (logged_in()): ?>
+                    <a href="/dashboard" class="btn-primary">Dashboard</a>
+                <?php else: ?>
+                    <a href="/login">Masuk</a>
+                <?php endif ?>
             </nav>
+
         </div>
     </header>
 
@@ -345,8 +351,12 @@
             </p>
 
             <div class="hero-actions">
-                <a href="/cerita" class="btn-primary">Mulai Cari Daerah</a>
-                <a href="/register" class="btn-outline">Jadi Kontributor Lokal</a>
+                <?php if (logged_in()): ?>
+                    <a href="/dashboard" class="btn-primary">Ke Dashboard</a>
+                <?php else: ?>
+                    <a href="/cerita" class="btn-primary">Jelajahi Cerita</a>
+                    <a href="/register" class="btn-outline">Jadi Kontributor</a>
+                <?php endif ?>
             </div>
         </div>
     </section>

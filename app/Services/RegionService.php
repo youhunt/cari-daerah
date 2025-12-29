@@ -63,4 +63,34 @@ class RegionService
     {
         return $this->request("/desa/getByKecamatan/{$kecamatanId}");
     }
+
+    // =========================
+    // SINGLE REGION BY ID
+    // =========================
+
+    public function getProvinceName(int $id): ?string
+    {
+        $data = $this->request("/provinsi/{$id}");
+        return $data[0]['description'] ?? null;
+    }
+
+    public function getCityName(int $id): ?string
+    {
+        $data = $this->request("/kabupaten/{$id}");
+        return $data[0]['description'] ?? null;
+    }
+
+    public function getDistrictName(int $id): ?string
+    {
+        $data = $this->request("/kecamatan/{$id}");
+        return $data[0]['description'] ?? null;
+    }
+
+    public function getVillageName(int $id): ?string
+    {
+        $data = $this->request("/desa/{$id}");
+        return $data[0]['description'] ?? null;
+    }
+
+
 }

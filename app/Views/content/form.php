@@ -63,6 +63,14 @@
                 placeholder="Tulis cerita daerah di sini..."><?= esc($content['content'] ?? '') ?></textarea>
         </div>
 
+        <!-- META INFO -->
+        <div class="form-group">
+            <label>Info Tambahan (Opsional)</label>
+            <textarea name="meta[info]" rows="3"
+                placeholder="Contoh: Parkir luas, cocok untuk keluarga">
+            </textarea>
+        </div>
+
         <!-- ACTION -->
         <div class="form-actions">
             <a href="/konten" class="btn-outline">Batal</a>

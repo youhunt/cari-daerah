@@ -36,4 +36,5 @@ class RegionModel extends Model
         $this->insert($data);
         return $this->getInsertID();
     }
+    
 }
