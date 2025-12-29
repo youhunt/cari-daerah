@@ -5,7 +5,7 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\ContentModel;
 
-class Moderasi extends BaseController
+class ModerasiController extends BaseController
 {
     public function index()
     {
@@ -15,7 +15,11 @@ class Moderasi extends BaseController
             'contents' => $model
                 ->whereIn('status', ['draft', 'flagged'])
                 ->orderBy('created_at', 'DESC')
-                ->findAll()
+                ->findAll(),
+            'breadcrumb' => [
+                ['label' => 'Dashboard', 'url' => '/dashboard'],
+                ['label' => 'Moderasi', 'url' => null],
+            ],
         ]);
     }
 

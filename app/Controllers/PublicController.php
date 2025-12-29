@@ -19,17 +19,42 @@ class PublicController extends BaseController
     // LIST PUBLIK
     public function index()
     {
-        $contents = $this->content
-            ->select('contents.*, regions.province_name, regions.city_name, regions.district_name')
-            ->join('regions', 'regions.id = contents.region_id', 'left')
-            ->where('contents.status', 'published')
-            ->orderBy('contents.created_at', 'DESC')
-            ->paginate(10);
+        $keyword   = $this->request->getGet('q');
+        $category  = $this->request->getGet('kategori');
+        $province  = $this->request->getGet('provinsi');
+
+        $builder = $this->content
+            ->select('contents.*, content_categories.name as category_name,
+                  regions.province_name, regions.city_name')
+            ->join('content_categories', 'content_categories.id = contents.category_id')
+            ->join('regions', 'regions.id = contents.region_id')
+            ->where('contents.status', 'published');
+
+        if ($keyword) {
+            $builder->groupStart()
+                ->like('contents.title', $keyword)
+                ->orLike('contents.summary', $keyword)
+                ->groupEnd();
+        }
+
+        if ($category) {
+            $builder->where('content_categories.slug', $category);
+        }
+
+        if ($province) {
+            $builder->where('regions.province_code', $province);
+        }
+
+        $contents = $builder->paginate(10);
 
         return view('public/index', [
             'contents' => $contents,
             'pager'    => $this->content->pager,
-            'title'    => 'Cari Cerita Daerah, Kuliner & Wisata Indonesia',
+            'title'    => 'Cari Daerah, Kuliner & Wisata Indonesia',
+            'meta'     => [
+                'description' =>
+                'Cari daerah, cari kuliner, cari wisata, dan cerita lokal Indonesia.',
+            ],
         ]);
     }
 
@@ -37,17 +62,18 @@ class PublicController extends BaseController
     public function show(string $slug)
     {
         $content = $this->content
-            ->select('contents.*, regions.*')
-            ->join('regions', 'regions.id = contents.region_id', 'left')
+            ->select('contents.*, content_categories.name as category_name,
+                  regions.*')
+            ->join('content_categories', 'content_categories.id = contents.category_id')
+            ->join('regions', 'regions.id = contents.region_id')
             ->where('contents.slug', $slug)
             ->where('contents.status', 'published')
             ->first();
 
-        if (!$content) {
+        if (! $content) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        // increment views (opsional)
         $this->content->where('id', $content['id'])->increment('views');
 
         return view('public/show', [

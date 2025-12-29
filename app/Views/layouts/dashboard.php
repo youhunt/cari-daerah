@@ -15,6 +15,7 @@
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
     <style>
         :root {
@@ -250,7 +251,39 @@
             min-height: 420px;
         }
 
+        #sidebar-menu a.active {
+            background: #8B0000;
+            color: #fff;
+            border-radius: 8px;
+        }
 
+        .breadcrumb {
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .breadcrumb a {
+            color: #8B0000;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb .active {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .breadcrumb .sep {
+            margin: 0 6px;
+            color: #aaa;
+        }
+
+
+        /* RESPONSIVE */
         @media (max-width: 900px) {
             .form-grid-2 {
                 grid-template-columns: 1fr;
@@ -279,10 +312,9 @@
             <span>CariDaerah</span>
         </div>
 
-        <nav>
-            <a href="/dashboard" class="active">Dashboard</a>
+        <nav id="sidebar-menu">
+            <a href="/dashboard">Dashboard</a>
             <a href="/konten">Konten Saya</a>
-            <a href="/konten/create">Tulis Konten</a>
 
             <?php if (in_groups('administrator')): ?>
                 <hr>
@@ -293,6 +325,8 @@
             <hr>
             <a href="/logout">Keluar</a>
         </nav>
+
+
     </aside>
 
     <!-- MAIN -->
@@ -307,12 +341,50 @@
                 <?= date('l, d M Y') ?>
             </div>
         </header>
+        <?php if (!empty($breadcrumb)): ?>
+            <nav class="breadcrumb">
+                <?php foreach ($breadcrumb as $i => $item): ?>
+                    <?php if ($item['url']): ?>
+                        <a href="<?= $item['url'] ?>">
+                            <?= esc($item['label']) ?>
+                        </a>
+                    <?php else: ?>
+                        <span class="active"><?= esc($item['label']) ?></span>
+                    <?php endif ?>
+
+                    <?php if ($i < count($breadcrumb) - 1): ?>
+                        <span class="sep">›</span>
+                    <?php endif ?>
+                <?php endforeach ?>
+            </nav>
+        <?php endif ?>
 
         <?= $this->renderSection('content') ?>
 
     </main>
+    <?= $this->renderSection('div-modal') ?>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <?= $this->renderSection('scripts') ?>
+
+    <script>
+        (function() {
+            const currentPath = window.location.pathname.replace(/\/$/, '');
+
+            document.querySelectorAll('#sidebar-menu a').forEach(link => {
+                const linkPath = link.getAttribute('href').replace(/\/$/, '');
+
+                if (
+                    currentPath === linkPath ||
+                    (linkPath !== '/' && currentPath.startsWith(linkPath))
+                ) {
+                    link.classList.add('active');
+                }
+            });
+        })();
+    </script>
+
 
 </body>
 

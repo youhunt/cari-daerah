@@ -38,7 +38,11 @@ class ContentController extends BaseController
             ->findAll();
 
         return view('content/index', [
-            'contents' => $contents
+            'contents' => $contents,
+            'breadcrumb' => [
+                ['label' => 'Dashboard', 'url' => '/dashboard'],
+                ['label' => 'Konten Saya', 'url' => null],
+            ],
         ]);
     }
 
@@ -46,6 +50,11 @@ class ContentController extends BaseController
     {
         return view('content/form', [
             'categories' => $this->category->active()->findAll(),
+            'breadcrumb' => [
+                ['label' => 'Dashboard', 'url' => '/dashboard'],
+                ['label' => 'Konten Saya', 'url' => '/konten'],
+                ['label' => 'Tulis Konten', 'url' => null],
+            ],
         ]);
     }
 
@@ -125,6 +134,11 @@ class ContentController extends BaseController
                 'city'     => $content['city_code'] ?? null,
                 'district' => $content['district_code'] ?? null,
                 'village'  => $content['village_code'] ?? null,
+            ],
+            'breadcrumb' => [
+                ['label' => 'Dashboard', 'url' => '/dashboard'],
+                ['label' => 'Konten Saya', 'url' => '/konten'],
+                ['label' => 'Edit Konten', 'url' => null],
             ],
         ]);
     }
