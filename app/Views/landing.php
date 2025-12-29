@@ -231,13 +231,35 @@
         /* WHY */
         .why-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 32px;
+            text-align: center;
         }
 
-        .why-item h3 {
-            margin-bottom: 10px;
-            font-size: 22px;
+        .why-item {
+            padding: 24px;
+            background: #fff;
+            border-radius: 20px;
+            padding: 32px 24px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .05);
+            transition: transform .3s;
+        }
+
+        .why-icon {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .why-icon img {
+            width: 250px;
+            height: auto;
+            transition: transform .3s ease;
+        }
+
+        .why-item:hover .why-icon img {
+            transform: translateY(-6px) scale(1.05);
         }
 
         /* CTA */

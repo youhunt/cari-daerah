@@ -187,6 +187,76 @@
             background: var(--primary-dark);
         }
 
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .muted {
+            color: #777;
+            margin-top: 4px;
+        }
+
+        .content-form {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input,
+        textarea,
+        select {
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .ck-editor {
+            width: 100%;
+        }
+
+        .ck-editor__editable {
+            min-height: 420px;
+        }
+
+
+        @media (max-width: 900px) {
+            .form-grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* RESPONSIVE */
         @media (max-width: 900px) {
             .sidebar {
@@ -241,6 +311,8 @@
         <?= $this->renderSection('content') ?>
 
     </main>
+
+    <?= $this->renderSection('scripts') ?>
 
 </body>
 

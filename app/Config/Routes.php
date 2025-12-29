@@ -9,12 +9,13 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', fn() => view('landing'));
 $routes->get('/dashboard', fn() => view('dashboard/index'), ['filter' => 'login']);
 
-$routes->group('region', function ($routes) {
-    $routes->get('provinsi', 'RegionApi::provinsi');
-    $routes->get('kabupaten/(:num)', 'RegionApi::kabupaten/$1');
-    $routes->get('kecamatan/(:num)', 'RegionApi::kecamatan/$1');
-    $routes->get('desa/(:num)', 'RegionApi::desa/$1');
+$routes->group('ajax', function ($routes) {
+    $routes->get('provinsi', 'RegionController::provinsi');
+    $routes->get('kabupaten/(:num)', 'RegionController::kabupaten/$1');
+    $routes->get('kecamatan/(:num)', 'RegionController::kecamatan/$1');
+    $routes->get('desa/(:num)', 'RegionController::desa/$1');
 });
+
 
 $routes->group('konten', ['filter' => 'login'], function ($routes) {
     $routes->get('/', 'ContentController::index');

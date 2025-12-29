@@ -1,42 +1,31 @@
-<div class="row g-3">
-    <div class="col-md-3">
+<div class="form-grid-4">
+
+    <div class="form-group">
         <label>Provinsi</label>
-        <select id="provinsi" class="form-control">
+        <select id="province" name="province_code" required>
             <option value="">-- Pilih Provinsi --</option>
         </select>
     </div>
 
-    <div class="col-md-3">
+    <div class="form-group">
         <label>Kabupaten / Kota</label>
-        <select id="kabupaten" class="form-control" disabled>
-            <option value="">-- Pilih Kabupaten --</option>
+        <select id="city" name="city_code" disabled required>
+            <option value="">-- Pilih Kabupaten / Kota --</option>
         </select>
     </div>
 
-    <div class="col-md-3">
+    <div class="form-group">
         <label>Kecamatan</label>
-        <select id="kecamatan" class="form-control" disabled>
+        <select id="district" name="district_code" disabled required>
             <option value="">-- Pilih Kecamatan --</option>
         </select>
     </div>
 
-    <div class="col-md-3">
-        <label>Desa / Kelurahan</label>
-        <select id="desa" class="form-control" disabled>
-            <option value="">-- Pilih Desa (Opsional) --</option>
+    <div class="form-group">
+        <label>Desa / Kelurahan (Opsional)</label>
+        <select id="village" name="village_code" disabled>
+            <option value="">-- Pilih Desa --</option>
         </select>
     </div>
+
 </div>
-
-<!-- hidden input untuk submit -->
-<input type="hidden" name="province_code" id="province_code">
-<input type="hidden" name="province_name" id="province_name">
-
-<input type="hidden" name="city_code" id="city_code">
-<input type="hidden" name="city_name" id="city_name">
-
-<input type="hidden" name="district_code" id="district_code">
-<input type="hidden" name="district_name" id="district_name">
-
-<input type="hidden" name="village_code" id="village_code">
-<input type="hidden" name="village_name" id="village_name">
