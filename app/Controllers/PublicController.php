@@ -4,16 +4,22 @@ namespace App\Controllers;
 
 use App\Models\ContentModel;
 use App\Models\RegionModel;
+use App\Models\PhotoModel;
+use \Myth\Auth\Models\UserModel;
 
 class PublicController extends BaseController
 {
     protected $content;
     protected $region;
+    protected $photo;
+    protected $userModel;
 
     public function __construct()
     {
         $this->content = new ContentModel();
         $this->region  = new RegionModel();
+        $this->photo   = new PhotoModel();
+        $this->userModel = new UserModel();
     }
 
     // LIST PUBLIK
@@ -25,9 +31,13 @@ class PublicController extends BaseController
 
         $builder = $this->content
             ->select('contents.*, content_categories.name as category_name,
-                  regions.province_name, regions.city_name')
+                  regions.province_name, regions.city_name, photos.path as hero_image,
+                  user_profiles.full_name, users.username')
             ->join('content_categories', 'content_categories.id = contents.category_id')
             ->join('regions', 'regions.id = contents.region_id')
+            ->join('photos', 'photos.content_id = contents.id AND photos.is_primary = 1', 'left')
+            ->join('users', 'users.id = contents.user_id', 'left')
+            ->join('user_profiles', 'user_profiles.user_id = contents.user_id', 'left')
             ->where('contents.status', 'published');
 
         if ($keyword) {
@@ -63,12 +73,17 @@ class PublicController extends BaseController
     {
         $content = $this->content
             ->select('contents.*, content_categories.name as category_name,
-                  regions.*')
+                  regions.*, user_profiles.full_name, users.username')
             ->join('content_categories', 'content_categories.id = contents.category_id')
             ->join('regions', 'regions.id = contents.region_id')
+            ->join('photos', 'photos.content_id = contents.id AND photos.is_primary = 1', 'left')
+            ->join('users', 'users.id = contents.user_id', 'left')
+            ->join('user_profiles', 'user_profiles.user_id = contents.user_id', 'left')
             ->where('contents.slug', $slug)
             ->where('contents.status', 'published')
             ->first();
+
+        $heroPhoto = $this->photo->primary($content['id']);
 
         if (! $content) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
@@ -82,6 +97,26 @@ class PublicController extends BaseController
             'meta'    => [
                 'description' => $content['summary'],
             ],
+            'heroPhoto' => $heroPhoto,
         ]);
     }
+
+    public function author($username)
+    {
+        $user = $this->userModel
+            ->where('username', $username)
+            ->first();
+
+        $contents = $this->content
+            ->where('user_id', $user['id'])
+            ->where('status', 'published')
+            ->findAll();
+
+        return view('public/author', [
+            'author' => $user,
+            'contents' => $contents,
+            'title' => 'Profil Penulis ' . $user['full_name'],
+        ]);
+    }
+
 }

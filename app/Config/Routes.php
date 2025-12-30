@@ -38,6 +38,8 @@ $routes->group('admin', ['filter' => 'role:administrator'], function ($routes) {
     $routes->get('users/password/(:num)', 'Admin\UserController::changePassword/$1');
     $routes->post('users/set-password', 'Admin\UserController::setPassword');
     $routes->post('users/change-group', 'Admin\UserController::changeGroup');
+
+    $routes->post('upload/ckeditor', 'UploadController::ckeditor');
 });
 
 // OPTIONAL: redirect dashboard lama
@@ -59,3 +61,5 @@ $routes->get('cari/cerita/(:segment)', 'PublicController::show/$1');
 // (opsional) backward compatibility
 $routes->get('cerita', fn() => redirect()->to('/cari'));
 $routes->get('cerita/(:segment)', fn($slug) => redirect()->to("/cari/cerita/$slug"));
+$routes->get('penulis/(:segment)', 'PublicController@author/$1');
+

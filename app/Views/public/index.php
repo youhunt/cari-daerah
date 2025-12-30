@@ -2,11 +2,14 @@
 <?= $this->section('content') ?>
 
 <h1>Cari Daerah, Kuliner & Wisata</h1>
-<p class="muted">Temukan cerita lokal dari seluruh Indonesia.</p>
+<p class="muted">
+    Temukan cerita lokal, kuliner khas, dan wisata daerah langsung dari warga setempat.
+</p>
 
 <form method="get" class="search-box">
-    <input type="text" name="q" placeholder="Cari kuliner, wisata, budaya..."
-        value="<?= esc($_GET['q'] ?? '') ?>">
+    <input type="text" name="q"
+           placeholder="Cari kuliner, wisata, budaya..."
+           value="<?= esc($_GET['q'] ?? '') ?>">
 
     <select name="kategori">
         <option value="">Semua Kategori</option>
@@ -19,6 +22,15 @@
     <button type="submit">Cari</button>
 </form>
 
+<p class="muted">📍 Konten dari berbagai daerah di Indonesia · Ditulis oleh warga lokal</p>
+
+<?php if (empty($contents)): ?>
+    <div class="card">
+        <p>Tidak ada hasil ditemukan.</p>
+    </div>
+<?php endif ?>
+
+<?php helper('text'); ?>
 <?php foreach ($contents as $row): ?>
     <article class="card">
         <h2>
@@ -28,12 +40,11 @@
         </h2>
 
         <p class="meta">
-            <?= esc($row['category_name']) ?> ·
-            <?= esc($row['city_name']) ?>,
-            <?= esc($row['province_name']) ?>
+            <span class="badge"><?= esc($row['category_name']) ?></span>
+            · <?= esc($row['city_name']) ?>, <?= esc($row['province_name']) ?>
         </p>
 
-        <p><?= esc($row['summary']) ?></p>
+        <p><?= esc(word_limiter($row['summary'], 30)) ?></p>
 
         <a href="/cari/cerita/<?= esc($row['slug']) ?>">
             Baca selengkapnya →

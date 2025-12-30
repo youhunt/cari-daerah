@@ -31,7 +31,7 @@
                     <tr>
                         <td>
                             <strong><?= esc($row['title']) ?></strong><br>
-                            <small class="muted"><?= esc($row['summary']) ?></small>
+                            <small class="muted"><?= esc(word_limiter($row['summary'], 30)) ?></small>
                         </td>
                         <td><?= esc($row['category_name'] ?? '-') ?></td>
                         <td><?= esc($row['region_name'] ?? '-') ?></td>

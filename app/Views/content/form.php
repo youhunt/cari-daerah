@@ -10,11 +10,11 @@
         </p>
     </div>
 
-    <form method="post"
+    <form method="post" enctype="multipart/form-data"
         action="<?= isset($content)
                     ? '/konten/update/' . $content['id']
                     : '/konten/store' ?>"
-        class="content-form">
+        class="content-form" >
 
         <?= csrf_field() ?>
 
@@ -54,6 +54,19 @@
             </select>
         </div>
 
+        <!-- FOTO UTAMA -->
+        <div class="form-group">
+            <label>Foto Utama</label>
+            <input type="file" name="hero_image" accept="image/*">
+
+            <?php if (!empty($heroPhoto)): ?>
+                <div style="margin:12px 0">
+                    <img src="<?= base_url($heroPhoto['path']) ?>"
+                        style="max-width:200px;border-radius:8px">
+                </div>
+            <?php endif ?>
+        </div>
+
         <!-- ISI CERITA -->
         <div class="form-group">
             <label>Isi Cerita</label>
@@ -64,12 +77,12 @@
         </div>
 
         <!-- META INFO -->
-        <div class="form-group">
+        <!-- <div class="form-group">
             <label>Info Tambahan (Opsional)</label>
             <textarea name="meta[info]" rows="3"
                 placeholder="Contoh: Parkir luas, cocok untuk keluarga">
             </textarea>
-        </div>
+        </div> -->
 
         <!-- ACTION -->
         <div class="form-actions">
@@ -92,6 +105,7 @@
     ClassicEditor
         .create(document.querySelector('#editor'), {
             placeholder: 'Tulis cerita daerah di sini...',
+            extraPlugins: [ MyCustomUploadAdapterPlugin ],
             toolbar: [
                 'heading', '|',
                 'bold', 'italic', 'link',
@@ -101,6 +115,32 @@
         })
         .catch(error => console.error(error));
 
+    class MyUploadAdapter {
+        constructor(loader) {
+            this.loader = loader;
+        }
+
+        upload() {
+            return this.loader.file.then(file => {
+            const data = new FormData();
+            data.append('upload', file);
+
+            return fetch('/upload/ckeditor', {
+                method: 'POST',
+                body: data
+            })
+            .then(res => res.json())
+            .then(res => ({ default: res.url }));
+            });
+        }
+    }
+
+    function MyCustomUploadAdapterPlugin(editor) {
+        editor.plugins.get('FileRepository')
+        .createUploadAdapter = loader => new MyUploadAdapter(loader);
+    }
+
+    // REGION DROPDOWN LOGIC
     const province = document.getElementById('province');
     const city = document.getElementById('city');
     const district = document.getElementById('district');
@@ -135,6 +175,8 @@
 
         if (!e.target.value) return;
 
+        document.getElementById('province_code').value = province.value;
+
         fetch(`/ajax/kabupaten/${e.target.value}`)
             .then(res => res.json())
             .then(data => populate(city, data, 'id', 'description'));
@@ -147,6 +189,8 @@
 
         if (!e.target.value) return;
 
+        document.getElementById('city_code').value = city.value;
+
         fetch(`/ajax/kecamatan/${e.target.value}`)
             .then(res => res.json())
             .then(data => populate(district, data, 'id', 'description'));
@@ -158,10 +202,90 @@
 
         if (!e.target.value) return;
 
+        document.getElementById('district_code').value = district.value;
+
         fetch(`/ajax/desa/${e.target.value}`)
             .then(res => res.json())
             .then(data => populate(village, data, 'id', 'description'));
     });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+
+        const province = document.getElementById('province');
+        const city     = document.getElementById('city');
+        const district = document.getElementById('district');
+        const village  = document.getElementById('village');
+
+        const selectedProvince  = province.dataset.selected;
+        const selectedCity      = city.dataset.selected;
+        const selectedDistrict  = district.dataset.selected;
+        const selectedVillage   = village.dataset.selected;
+
+        if (selectedProvince) {
+            await loadProvince(selectedProvince);
+            await loadCity(selectedProvince, selectedCity);
+            await loadDistrict(selectedCity, selectedDistrict);
+            await loadVillage(selectedDistrict, selectedVillage);
+        }
+    });
+
+    function loadCity(provinceCode, selected = null) {
+        return fetch(`/ajax/kabupaten/${provinceCode}`)
+            .then(res => res.json())
+            .then(data => {
+                city.innerHTML = '<option value="">-- Pilih Kabupaten --</option>';
+                data.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.id;
+                    opt.text  = item.description;
+                    if (selected == item.id) opt.selected = true;
+                    city.appendChild(opt);
+                });
+            });
+    }
+    function loadDistrict(cityCode, selected = null) {
+        return fetch(`/ajax/kecamatan/${cityCode}`)
+            .then(res => res.json())
+            .then(data => {
+                district.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+                data.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.id;
+                    opt.text  = item.description;
+                    if (selected == item.id) opt.selected = true;
+                    district.appendChild(opt);
+                });
+            });
+    }
+    function loadVillage(districtCode, selected = null) {
+        return fetch(`/ajax/desa/${districtCode}`)
+            .then(res => res.json())
+            .then(data => {
+                village.innerHTML = '<option value="">-- Pilih Desa --</option>';
+                data.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.id;
+                    opt.text  = item.description;
+                    if (selected == item.id) opt.selected = true;
+                    village.appendChild(opt);
+                });
+            });
+    }
+    function loadProvince(selected = null) {
+        return fetch('/ajax/provinsi')
+            .then(res => res.json())
+            .then(data => {
+                province.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
+                data.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.id;
+                    opt.text  = item.description;
+                    if (selected == item.id) opt.selected = true;
+                    province.appendChild(opt);
+                });
+            });
+    }
+
 </script>
 
 <?= $this->endSection() ?>

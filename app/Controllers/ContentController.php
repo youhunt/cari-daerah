@@ -6,7 +6,8 @@ use App\Models\{
     ContentModel,
     ContentMetaModel,
     ContentCategoryModel,
-    RegionModel
+    RegionModel,
+    PhotoModel
 };
 
 use App\Services\RegionService;
@@ -18,6 +19,7 @@ class ContentController extends BaseController
     protected ContentCategoryModel $category;
     protected RegionModel $region;
     protected RegionService $regionService;
+    protected PhotoModel $photo;
 
     public function __construct()
     {
@@ -26,6 +28,7 @@ class ContentController extends BaseController
         $this->category = new ContentCategoryModel();
         $this->region   = new RegionModel();
         $this->regionService = new RegionService();
+        $this->photo    = new PhotoModel();
     }
 
     public function index()
@@ -108,6 +111,19 @@ class ContentController extends BaseController
 
         $this->meta->setMeta($contentId, $this->request->getPost('meta') ?? []);
 
+        $file = $this->request->getFile('hero_image');
+
+        if ($file && $file->isValid()) {
+            $newName = $file->getRandomName();
+            $file->move('uploads/photos', $newName);
+
+            $this->photo->insert([
+                'content_id' => $contentId,
+                'path'       => 'uploads/photos/' . $newName,
+                'is_primary' => true,
+            ]);
+        }
+
         return redirect()->to('/konten')->with('success', 'Konten berhasil disimpan');
     }
 
@@ -124,16 +140,18 @@ class ContentController extends BaseController
 
         $categories = $this->category->findAll();
 
+        $region = $this->region->find($content['region_id']);
+
         return view('content/form', [
             'content'    => $content,
             'categories' => $categories,
 
             // ⬇️ untuk auto-select wilayah
             'region' => [
-                'province' => $content['province_code'] ?? null,
-                'city'     => $content['city_code'] ?? null,
-                'district' => $content['district_code'] ?? null,
-                'village'  => $content['village_code'] ?? null,
+                'province_code' => $region['province_code'] ?? null,
+                'city_code'     => $region['city_code'] ?? null,
+                'district_code' => $region['district_code'] ?? null,
+                'village_code'  => $region['village_code'] ?? null,
             ],
             'breadcrumb' => [
                 ['label' => 'Dashboard', 'url' => '/dashboard'],
@@ -196,6 +214,25 @@ class ContentController extends BaseController
             'content'     => $this->request->getPost('content'),
             'updated_at'  => date('Y-m-d H:i:s'),
         ]);
+
+        $file = $this->request->getFile('hero_image');
+
+        if ($file && $file->isValid()) {
+
+            // reset hero lama
+            $this->photo->where('content_id', $id)
+                ->set(['is_primary' => false])
+                ->update();
+
+            $newName = $file->getRandomName();
+            $file->move('uploads/photos', $newName);
+
+            $this->photo->insert([
+                'content_id' => $id,
+                'path'       => 'uploads/photos/' . $newName,
+                'is_primary' => true,
+            ]);
+        }
 
         // Meta (kalau ada)
         $this->meta->setMeta($id, $this->request->getPost('meta') ?? []);
