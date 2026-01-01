@@ -3,21 +3,30 @@
 
 <article class="content-detail">
 
+    <!-- JUDUL -->
     <header class="content-header">
+        <h1 class="content-title">
+            <?= esc($content['title']) ?>
+        </h1>
+
+        <!-- INFO BAR -->
         <div class="content-info">
 
             <div class="info-left">
-                <span class="badge"><?= esc($content['category_name']) ?></span>
+                <span class="badge">
+                    <?= esc($content['category_name']) ?>
+                </span>
                 <span class="region">
-                    <?= esc(
-                        trim("{$content['district_name']}, {$content['city_name']}, {$content['province_name']}")
-                    ) ?>
+                    <?= esc(trim("{$content['district_name']}, {$content['city_name']}, {$content['province_name']}")) ?>
                 </span>
             </div>
 
             <div class="info-right">
                 <span class="author">
-                    ✍️ <?= esc($content['full_name'] ?? $content['username']) ?>
+                    Ditulis oleh
+                    <a href="/penulis/<?= esc($content['username']) ?>">
+                        <?= esc($content['full_name'] ?? $content['username']) ?>
+                    </a>
                 </span>
                 <span class="date">
                     <?= date('d M Y', strtotime($content['created_at'])) ?>
@@ -25,26 +34,30 @@
             </div>
 
         </div>
+    </header>
 
-        <h1><?= esc($content['title']) ?></h1>
+    <!-- HERO IMAGE -->
+    <?php if (!empty($heroPhoto)): ?>
+        <figure class="content-hero">
+            <img src="<?= base_url($heroPhoto['path']) ?>" alt="<?= esc($content['title']) ?>">
+        </figure>
+    <?php endif ?>
 
-        <?php if (!empty($heroPhoto)): ?>
-            <img src="<?= base_url($heroPhoto['path']) ?>"
-                style="width:100%;border-radius:16px;margin-bottom:32px">
-        <?php endif ?>
-
+    <!-- SUMMARY -->
+    <?php if (!empty($content['summary'])): ?>
         <p class="content-summary">
             <?= esc($content['summary']) ?>
         </p>
-    </header>
+    <?php endif ?>
 
+    <!-- BODY -->
     <div class="content-body">
         <?= $content['content'] ?>
     </div>
 
-    <div style="margin-top:48px">
+    <footer class="content-footer">
         <a href="/cari">← Kembali ke pencarian</a>
-    </div>
+    </footer>
 
 </article>
 

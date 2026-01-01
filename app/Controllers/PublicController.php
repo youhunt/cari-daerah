@@ -104,11 +104,17 @@ class PublicController extends BaseController
     public function author($username)
     {
         $user = $this->userModel
+            ->select('users.*, user_profiles.full_name')
+            ->join('user_profiles', 'user_profiles.user_id = users.id', 'left')
             ->where('username', $username)
             ->first();
 
+        if (! $user) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
         $contents = $this->content
-            ->where('user_id', $user['id'])
+            ->where('user_id', $user->id)
             ->where('status', 'published')
             ->findAll();
 
@@ -118,5 +124,4 @@ class PublicController extends BaseController
             'title' => 'Profil Penulis ' . $user['full_name'],
         ]);
     }
-
 }

@@ -7,6 +7,8 @@ use CodeIgniter\Router\RouteCollection;
  */
 //$routes->get('/', 'Home::index');
 $routes->get('/', fn() => view('landing'));
+$routes->get('/about', fn() => view('public/about'));
+$routes->get('/tentang', fn() => view('public/about'));
 // =======================
 // DASHBOARD (SEMUA USER)
 // =======================
@@ -61,5 +63,4 @@ $routes->get('cari/cerita/(:segment)', 'PublicController::show/$1');
 // (opsional) backward compatibility
 $routes->get('cerita', fn() => redirect()->to('/cari'));
 $routes->get('cerita/(:segment)', fn($slug) => redirect()->to("/cari/cerita/$slug"));
-$routes->get('penulis/(:segment)', 'PublicController@author/$1');
-
+$routes->get('penulis/(:segment)', 'PublicController::author/$1');
