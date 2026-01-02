@@ -15,5 +15,10 @@
                                                 <a href="#" class="btn btn-success btn-circle btn-sm btn-change-group" data-id="<?= $row->id;?>" title="Ubah Grup">
                                                     <i class="fas fa-tasks"></i>
                                                 </a>
+                                                <a href="/admin/users/profile/<?= $row->id ?>"
+                                                class="btn btn-info btn-circle btn-sm"
+                                                title="Edit Profil">
+                                                <i class="fas fa-user-edit"></i>
+                                                </a>
                                             </td>
                                         </tr>

@@ -209,6 +209,12 @@
             .then(data => populate(village, data, 'id', 'description'));
     });
 
+    // DESA SELECTED
+    village.addEventListener('change', e => {
+        if (!e.target.value) return;
+        document.getElementById('village_code').value = village.value;
+    });
+    
     document.addEventListener('DOMContentLoaded', async () => {
 
         const province = document.getElementById('province');

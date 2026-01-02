@@ -25,11 +25,16 @@ $routes->group('konten', ['filter' => 'login'], function ($routes) {
     $routes->post('update/(:num)', 'ContentController::update/$1');
 });
 
+$routes->group('', ['filter' => 'login'], function ($routes) {
+    $routes->get('profile', 'ProfileController::index');
+    $routes->post('profile/update', 'ProfileController::update');
+});
 // =======================
 // ADMIN AREA
 // =======================
 $routes->group('admin', ['filter' => 'role:administrator'], function ($routes) {
     $routes->get('moderasi', 'Admin\ModerasiController::index');
+    $routes->post('moderasi/update/(:num)', 'Admin\ModerasiController::update/$1');
 
     // USERS
     $routes->get('users', 'Admin\UserController::index');
@@ -40,9 +45,12 @@ $routes->group('admin', ['filter' => 'role:administrator'], function ($routes) {
     $routes->get('users/password/(:num)', 'Admin\UserController::changePassword/$1');
     $routes->post('users/set-password', 'Admin\UserController::setPassword');
     $routes->post('users/change-group', 'Admin\UserController::changeGroup');
+    $routes->get('users/profile/(:num)', 'Admin\UserController::editProfile/$1');
+    $routes->post('users/profile/save', 'Admin\UserController::saveProfile');
 
     $routes->post('upload/ckeditor', 'UploadController::ckeditor');
 });
+
 
 // OPTIONAL: redirect dashboard lama
 $routes->get('admin/dashboard', fn() => redirect()->to('/dashboard'));

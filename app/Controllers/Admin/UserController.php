@@ -9,6 +9,7 @@ use \Myth\Auth\Password;
 use \Myth\Auth\Entities\User;
 use \Myth\Auth\Models\GroupModel;
 use \Myth\Auth\Config\Auth as AuthConfig;
+use App\Models\UserProfilesModel;
 
 class UserController extends BaseController
 {
@@ -217,4 +218,47 @@ class UserController extends BaseController
         // Success!
         return redirect()->to(base_url('/admin/users/index'));
     }
+
+    public function editProfile($userId)
+    {
+        $profileModel = new UserProfilesModel();
+        $userModel    = new UserModel();
+
+        $user = $userModel->find($userId);
+        if (!$user) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        $profile = $profileModel->find($userId);
+
+        return view('admin/users/profile_form', [
+            'user'    => $user,
+            'profile' => $profile,
+            'title'   => 'Edit Profil Pengguna',
+            'breadcrumb' => [
+                ['label' => 'Dashboard', 'url' => '/dashboard'],
+                ['label' => 'Pengguna', 'url' => '/admin/users'],
+                ['label' => 'Edit Profil', 'url' => null],
+            ],
+        ]);
+    }
+
+    public function saveProfile()
+    {
+        $profileModel = new UserProfilesModel();
+
+        $data = [
+            'user_id'     => $this->request->getPost('user_id'),
+            'full_name'   => $this->request->getPost('full_name'),
+            'trust_level' => $this->request->getPost('trust_level') ?? 'new',
+        ];
+
+        $profileModel->save($data);
+
+        return redirect()
+            ->to('/admin/users')
+            ->with('success', 'Profil pengguna berhasil diperbarui');
+    }
+
+
 }

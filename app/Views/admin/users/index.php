@@ -17,7 +17,7 @@
                         <th>Grup</th>
                         <th>Email</th>
                         <th style="width: 60px;">Aktif</th>
-                        <th style="width: 90px;"></th>
+                        <th style="width: 190px;"></th>
                     </tr>
                 </thead>
                 <tbody>

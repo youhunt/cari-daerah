@@ -15,7 +15,7 @@
 	</form>
 
 	<div class="links">
-		<p><a href="<?= route_to('register') ?>">Daftar akun baru</a></p>
+		<!-- <p><a href="<?= route_to('register') ?>">Daftar akun baru</a></p> -->
 		<p><a href="<?= route_to('forgot') ?>">Lupa password?</a></p>
 	</div>
 </div>
